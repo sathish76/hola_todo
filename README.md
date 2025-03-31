@@ -1,6 +1,6 @@
 # hola_todo
 
-The focus is on building a robust and user-friendly solution with proper coding practices, modular architecture, and adherence to design principles. Candidates are encouraged to prioritize functionality, code quality, and user experience while following the given guidelines.
+## Requirements
 
 ### User Stories - Tasks List
 - As a user, I want tasks to be grouped by their due date so that I can view them with the same deadline together.
