@@ -16,6 +16,23 @@ mixin _$TasksStore on _TasksStore, Store {
           Computed<String?>(() => super.dueDateFormatted,
               name: '_TasksStore.dueDateFormatted'))
       .value;
+  Computed<List<TaskModel>>? _$tasksSortedByDueDateComputed;
+
+  @override
+  List<TaskModel> get tasksSortedByDueDate =>
+      (_$tasksSortedByDueDateComputed ??= Computed<List<TaskModel>>(
+              () => super.tasksSortedByDueDate,
+              name: '_TasksStore.tasksSortedByDueDate'))
+          .value;
+  Computed<Map<DateTime, List<TaskModel>>>? _$tasksGroupedByDueDateComputed;
+
+  @override
+  Map<DateTime, List<TaskModel>> get tasksGroupedByDueDate =>
+      (_$tasksGroupedByDueDateComputed ??=
+              Computed<Map<DateTime, List<TaskModel>>>(
+                  () => super.tasksGroupedByDueDate,
+                  name: '_TasksStore.tasksGroupedByDueDate'))
+          .value;
 
   late final _$tasksAtom = Atom(name: '_TasksStore.tasks', context: context);
 
@@ -84,8 +101,9 @@ mixin _$TasksStore on _TasksStore, Store {
       AsyncAction('_TasksStore.updateTask', context: context);
 
   @override
-  Future<void> updateTask(TaskModel updatedTask) {
-    return _$updateTaskAsyncAction.run(() => super.updateTask(updatedTask));
+  Future<void> updateTask(String name, String description) {
+    return _$updateTaskAsyncAction
+        .run(() => super.updateTask(name, description));
   }
 
   late final _$removeTaskAsyncAction =
@@ -125,17 +143,6 @@ mixin _$TasksStore on _TasksStore, Store {
         name: '_TasksStore.cancelTaskEdit');
     try {
       return super.cancelTaskEdit();
-    } finally {
-      _$_TasksStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void completeTaskEdit() {
-    final _$actionInfo = _$_TasksStoreActionController.startAction(
-        name: '_TasksStore.completeTaskEdit');
-    try {
-      return super.completeTaskEdit();
     } finally {
       _$_TasksStoreActionController.endAction(_$actionInfo);
     }
@@ -191,7 +198,9 @@ mixin _$TasksStore on _TasksStore, Store {
 tasks: ${tasks},
 editMode: ${editMode},
 taskSelectedForEdit: ${taskSelectedForEdit},
-dueDateFormatted: ${dueDateFormatted}
+dueDateFormatted: ${dueDateFormatted},
+tasksSortedByDueDate: ${tasksSortedByDueDate},
+tasksGroupedByDueDate: ${tasksGroupedByDueDate}
     ''';
   }
 }

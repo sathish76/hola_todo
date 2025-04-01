@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:hola_todo/core/utils/utils.dart';
 import 'package:hola_todo/data/models/tag/tag.dart';
 import 'package:mobx/mobx.dart';
@@ -33,6 +34,12 @@ abstract class _TasksStore with Store {
   @computed
   String? get dueDateFormatted => taskSelectedForEdit?.dueDate != null ? formatDate(taskSelectedForEdit!.dueDate) : null;
 
+  @computed
+  List<TaskModel> get tasksSortedByDueDate => tasks.sorted((a, b) => a.dueDate.compareTo(b.dueDate)).toList();
+
+  @computed
+  Map<DateTime, List<TaskModel>> get tasksGroupedByDueDate => tasksSortedByDueDate.groupListsBy((task) => task.dueDate);
+
   @action
   Future<void> fetchTasks() async {
     subscription = _taskRepository.getTasks().listen((taskList) {
@@ -47,8 +54,8 @@ abstract class _TasksStore with Store {
   }
 
   @action
-  Future<void> updateTask(TaskModel updatedTask) async {
-    await _taskRepository.addTask(updatedTask);
+  Future<void> updateTask(String name, String description) async {
+    await _taskRepository.updateTask(taskSelectedForEdit!.copyWith(name: name, description: description));
   }
 
   @action
@@ -75,20 +82,14 @@ abstract class _TasksStore with Store {
   }
 
   @action
-  void completeTaskEdit() {
-    if (taskSelectedForEdit != null) {
-      updateTask(taskSelectedForEdit!);
-    }
-  }
-
-  @action
   void prepareNewTask() {
     editMode = TaskEditMode.add;
+    final now = DateTime.now();
     taskSelectedForEdit = TaskModel(
       id: 0,
       name: '',
       description: '',
-      dueDate: DateTime.now(),
+      dueDate: DateTime(now.year, now.month, now.day),
       isCompleted: false,
     );
   }
