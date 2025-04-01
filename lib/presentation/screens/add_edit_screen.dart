@@ -16,7 +16,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
   late TasksStore tasksStore;
   late TagStore tagStore;
   final TextEditingController _taskController = TextEditingController(text: "Buy Eggs");
-  final TextEditingController _descriptionController = TextEditingController(text: "Buy 12 eggs");
+  final TextEditingController _descriptionController = TextEditingController(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 
   @override
   void initState() {
@@ -101,7 +101,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       ),
                       IconButton(
                         onPressed: () async {
-                          final selectedDate = await showDatePicker(
+                          DateTime? selectedDate = await showDatePicker(
                             context: context,
                             initialDate:
                                 tasksStore.taskSelectedForEdit?.dueDate ??
@@ -111,6 +111,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                               const Duration(days: 365),
                             ),
                           );
+                          selectedDate = selectedDate != null ? DateTime(selectedDate.year, selectedDate.month, selectedDate.day) : null;
                           if (selectedDate != null) {
                             tasksStore.setDueDate(selectedDate);
                           }
@@ -185,10 +186,17 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     ),
                   ),
                   onPressed: () {
-                    tasksStore.addTask(
-                      _taskController.text,
-                      _descriptionController.text,
-                    );
+                    if (tasksStore.editMode == TaskEditMode.add) {
+                      tasksStore.addTask(
+                        _taskController.text,
+                        _descriptionController.text,
+                      );
+                    } else {
+                      tasksStore.updateTask(
+                        _taskController.text,
+                        _descriptionController.text,
+                      );
+                    }
                     context.pop();
                   },
                   child: Text(

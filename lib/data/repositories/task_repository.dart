@@ -33,6 +33,7 @@ class TaskRepository {
             name: task.name,
             dueDate: task.dueDate,
             isCompleted: task.isCompleted,
+            description: task.description,
             tags: [],
           );
         }
@@ -55,9 +56,7 @@ class TaskRepository {
         dueDate: task.dueDate,
         isCompleted: task.isCompleted,
         description:
-            task.description == null
-                ? const Value(null)
-                : Value(task.description),
+            task.description == null ? Value.absent() : Value(task.description),
       ),
     );
 
@@ -96,5 +95,15 @@ class TaskRepository {
                 : Value(task.description),
       ),
     );
+
+    final tags = await _database.taskTags.select().get();
+    for (final tag in tags) {
+      if (tag.taskId == task.id) {
+        await _database.taskTags.deleteOne(tag);
+      }
+    }
+    for (final tag in task.tags ?? []) {
+      await _database.taskTags.insertOne(TaskTagsCompanion.insert(taskId: task.id, tagId: tag.id));
+    }
   }
 }
