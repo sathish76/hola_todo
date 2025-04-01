@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TaskModel {
 
- int get id; String get name; String get description; DateTime get dueDate; List<String> get tags; bool get isCompleted;
+ int get id; String get name; DateTime get dueDate; bool get isCompleted; String? get description; List<TagModel>? get tags;
 /// Create a copy of TaskModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $TaskModelCopyWith<TaskModel> get copyWith => _$TaskModelCopyWithImpl<TaskModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaskModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.tags, tags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,description,dueDate,const DeepCollectionEquality().hash(tags),isCompleted);
+int get hashCode => Object.hash(runtimeType,id,name,dueDate,isCompleted,description,const DeepCollectionEquality().hash(tags));
 
 @override
 String toString() {
-  return 'TaskModel(id: $id, name: $name, description: $description, dueDate: $dueDate, tags: $tags, isCompleted: $isCompleted)';
+  return 'TaskModel(id: $id, name: $name, dueDate: $dueDate, isCompleted: $isCompleted, description: $description, tags: $tags)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $TaskModelCopyWith<$Res>  {
   factory $TaskModelCopyWith(TaskModel value, $Res Function(TaskModel) _then) = _$TaskModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String description, DateTime dueDate, List<String> tags, bool isCompleted
+ int id, String name, DateTime dueDate, bool isCompleted, String? description, List<TagModel>? tags
 });
 
 
@@ -66,15 +66,15 @@ class _$TaskModelCopyWithImpl<$Res>
 
 /// Create a copy of TaskModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? dueDate = null,Object? tags = null,Object? isCompleted = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? dueDate = null,Object? isCompleted = null,Object? description = freezed,Object? tags = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
-as DateTime,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
-as List<String>,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
-as bool,
+as DateTime,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
+as List<TagModel>?,
   ));
 }
 
@@ -85,21 +85,23 @@ as bool,
 @JsonSerializable()
 
 class _TaskModel implements TaskModel {
-   _TaskModel({required this.id, required this.name, required this.description, required this.dueDate, required final  List<String> tags, required this.isCompleted}): _tags = tags;
+   _TaskModel({required this.id, required this.name, required this.dueDate, required this.isCompleted, this.description, final  List<TagModel>? tags}): _tags = tags;
   factory _TaskModel.fromJson(Map<String, dynamic> json) => _$TaskModelFromJson(json);
 
 @override final  int id;
 @override final  String name;
-@override final  String description;
 @override final  DateTime dueDate;
- final  List<String> _tags;
-@override List<String> get tags {
+@override final  bool isCompleted;
+@override final  String? description;
+ final  List<TagModel>? _tags;
+@override List<TagModel>? get tags {
+  final value = _tags;
+  if (value == null) return null;
   if (_tags is EqualUnmodifiableListView) return _tags;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_tags);
+  return EqualUnmodifiableListView(value);
 }
 
-@override final  bool isCompleted;
 
 /// Create a copy of TaskModel
 /// with the given fields replaced by the non-null parameter values.
@@ -114,16 +116,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaskModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._tags, _tags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,description,dueDate,const DeepCollectionEquality().hash(_tags),isCompleted);
+int get hashCode => Object.hash(runtimeType,id,name,dueDate,isCompleted,description,const DeepCollectionEquality().hash(_tags));
 
 @override
 String toString() {
-  return 'TaskModel(id: $id, name: $name, description: $description, dueDate: $dueDate, tags: $tags, isCompleted: $isCompleted)';
+  return 'TaskModel(id: $id, name: $name, dueDate: $dueDate, isCompleted: $isCompleted, description: $description, tags: $tags)';
 }
 
 
@@ -134,7 +136,7 @@ abstract mixin class _$TaskModelCopyWith<$Res> implements $TaskModelCopyWith<$Re
   factory _$TaskModelCopyWith(_TaskModel value, $Res Function(_TaskModel) _then) = __$TaskModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, String description, DateTime dueDate, List<String> tags, bool isCompleted
+ int id, String name, DateTime dueDate, bool isCompleted, String? description, List<TagModel>? tags
 });
 
 
@@ -151,15 +153,15 @@ class __$TaskModelCopyWithImpl<$Res>
 
 /// Create a copy of TaskModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? dueDate = null,Object? tags = null,Object? isCompleted = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? dueDate = null,Object? isCompleted = null,Object? description = freezed,Object? tags = freezed,}) {
   return _then(_TaskModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
-as DateTime,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
-as List<String>,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
-as bool,
+as DateTime,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,tags: freezed == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
+as List<TagModel>?,
   ));
 }
 

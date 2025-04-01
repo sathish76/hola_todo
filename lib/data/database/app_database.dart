@@ -3,6 +3,8 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:hola_todo/data/database/tag.dart';
 import 'package:hola_todo/data/database/task.dart';
 import 'package:hola_todo/data/database/task_tag_map.dart';
+import 'package:hola_todo/data/models/tag/tag.dart';
+import 'package:hola_todo/data/models/task/task_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
