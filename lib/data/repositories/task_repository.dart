@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:hola_todo/data/database/app_database.dart';
+import 'package:hola_todo/data/models/tag/tag.dart';
 import 'package:hola_todo/data/models/task/task_model.dart';
 import 'package:injectable/injectable.dart';
 
@@ -37,7 +38,9 @@ class TaskRepository {
         }
 
         if (tag != null) {
-          taskMap[task.id]!.tags!.add(tag);
+          taskMap[task.id] = taskMap[task.id]!.copyWith(
+            tags: [...taskMap[task.id]!.tags ?? [], tag],
+          );
         }
       }
 
@@ -46,14 +49,23 @@ class TaskRepository {
   }
 
   Future<void> addTask(TaskModel task) async {
-    await _database.tasks.insertOne(
+    final taskId = await _database.tasks.insertOne(
       TasksCompanion.insert(
         name: task.name,
         dueDate: task.dueDate,
         isCompleted: task.isCompleted,
-        description: task.description == null ? const Value(null) : Value(task.description),
+        description:
+            task.description == null
+                ? const Value(null)
+                : Value(task.description),
       ),
     );
+
+    for (final TagModel tag in task.tags ?? []) {
+      await _database.taskTags.insertOne(
+        TaskTagsCompanion.insert(taskId: taskId, tagId: tag.id),
+      );
+    }
   }
 
   Future<void> deleteTask(TaskModel task) async {
@@ -63,7 +75,10 @@ class TaskRepository {
         name: task.name,
         dueDate: task.dueDate,
         isCompleted: task.isCompleted,
-        description: task.description == null ? const Value(null) : Value(task.description),
+        description:
+            task.description == null
+                ? const Value(null)
+                : Value(task.description),
       ),
     );
   }
@@ -75,7 +90,10 @@ class TaskRepository {
         name: task.name,
         dueDate: task.dueDate,
         isCompleted: task.isCompleted,
-        description: task.description == null ? const Value(null) : Value(task.description),
+        description:
+            task.description == null
+                ? const Value(null)
+                : Value(task.description),
       ),
     );
   }
