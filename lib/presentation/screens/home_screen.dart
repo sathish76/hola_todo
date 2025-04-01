@@ -64,17 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
           width: double.infinity,
           child: Builder(
             builder: (context) {
-              return InkWell(
-                onTap: () {
+              return GestureDetector(
+                onTapDown: (details) {
+                  final tapPosition = details.globalPosition;
                   tasksStore.startTaskEdit(task);
-                  final renderBox = context.findRenderObject() as RenderBox;
-                  final offset =
-                      renderBox.localToGlobal(Offset.zero) +
-                      Offset(
-                        renderBox.size.width / 2,
-                        renderBox.size.height / 2,
-                      );
-                  context.push(addRoute, extra: offset);
+                  context.push(addRoute, extra: tapPosition);
                 },
                 child: Card(
                   child: Padding(
@@ -135,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTaskGroup(DateTime date, List<TaskModel> tasks) {
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
