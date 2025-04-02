@@ -15,8 +15,13 @@ class AddEditScreen extends StatefulWidget {
 class _AddEditScreenState extends State<AddEditScreen> {
   late TasksStore tasksStore;
   late TagStore tagStore;
-  final TextEditingController _taskController = TextEditingController(text: "Buy Eggs");
-  final TextEditingController _descriptionController = TextEditingController(text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+  final TextEditingController _taskController = TextEditingController(
+    text: "Buy Eggs",
+  );
+  final TextEditingController _descriptionController = TextEditingController(
+    text:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  );
 
   @override
   void initState() {
@@ -54,6 +59,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orangeAccent.shade100,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent.shade100,
         leading: IconButton(
@@ -81,7 +87,10 @@ class _AddEditScreenState extends State<AddEditScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Description', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Description',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               TextField(
                 controller: _descriptionController,
                 maxLines: 5,
@@ -111,7 +120,14 @@ class _AddEditScreenState extends State<AddEditScreen> {
                               const Duration(days: 365),
                             ),
                           );
-                          selectedDate = selectedDate != null ? DateTime(selectedDate.year, selectedDate.month, selectedDate.day) : null;
+                          selectedDate =
+                              selectedDate != null
+                                  ? DateTime(
+                                    selectedDate.year,
+                                    selectedDate.month,
+                                    selectedDate.day,
+                                  )
+                                  : null;
                           if (selectedDate != null) {
                             tasksStore.setDueDate(selectedDate);
                           }
@@ -127,7 +143,17 @@ class _AddEditScreenState extends State<AddEditScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Text('Tags', style: Theme.of(context).textTheme.titleLarge),
+              Row(
+                children: [
+                  Text('Tags', style: Theme.of(context).textTheme.titleLarge),
+                  IconButton(
+                    onPressed: () {
+                      addTagDialog();
+                    },
+                    icon: const Icon(Icons.add_circle, color: Colors.black),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               Text(
                 'Select tags for the task',
@@ -141,19 +167,21 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       children: [
                         ...tagStore.tags.map(
                           (tag) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
                             child: FilterChip(
                               label: Text(tag.name),
                               deleteIcon: null,
                               selected:
-                                  tasksStore.taskSelectedForEdit?.tags?.contains(
-                                    tag,
-                                  ) ??
+                                  tasksStore.taskSelectedForEdit?.tags
+                                      ?.contains(tag) ??
                                   false,
                               onSelected: (selected) {
                                 if (selected) {
                                   tasksStore.toggleTagSelection([
-                                    ...tasksStore.taskSelectedForEdit!.tags ?? [],
+                                    ...tasksStore.taskSelectedForEdit!.tags ??
+                                        [],
                                     tag,
                                   ]);
                                 } else {
@@ -162,12 +190,6 @@ class _AddEditScreenState extends State<AddEditScreen> {
                               },
                             ),
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            addTagDialog();
-                          },
-                          child: Text('Add Tag'),
                         ),
                       ],
                     );

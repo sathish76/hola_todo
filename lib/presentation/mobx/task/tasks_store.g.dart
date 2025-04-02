@@ -9,6 +9,13 @@ part of 'tasks_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$TasksStore on _TasksStore, Store {
+  Computed<List<TaskModel>>? _$filteredTasksComputed;
+
+  @override
+  List<TaskModel> get filteredTasks => (_$filteredTasksComputed ??=
+          Computed<List<TaskModel>>(() => super.filteredTasks,
+              name: '_TasksStore.filteredTasks'))
+      .value;
   Computed<String?>? _$dueDateFormattedComputed;
 
   @override
@@ -78,6 +85,38 @@ mixin _$TasksStore on _TasksStore, Store {
   set taskSelectedForEdit(TaskModel? value) {
     _$taskSelectedForEditAtom.reportWrite(value, super.taskSelectedForEdit, () {
       super.taskSelectedForEdit = value;
+    });
+  }
+
+  late final _$filterTagsAtom =
+      Atom(name: '_TasksStore.filterTags', context: context);
+
+  @override
+  List<TagModel> get filterTags {
+    _$filterTagsAtom.reportRead();
+    return super.filterTags;
+  }
+
+  @override
+  set filterTags(List<TagModel> value) {
+    _$filterTagsAtom.reportWrite(value, super.filterTags, () {
+      super.filterTags = value;
+    });
+  }
+
+  late final _$sortAscendingAtom =
+      Atom(name: '_TasksStore.sortAscending', context: context);
+
+  @override
+  bool get sortAscending {
+    _$sortAscendingAtom.reportRead();
+    return super.sortAscending;
+  }
+
+  @override
+  set sortAscending(bool value) {
+    _$sortAscendingAtom.reportWrite(value, super.sortAscending, () {
+      super.sortAscending = value;
     });
   }
 
@@ -193,11 +232,36 @@ mixin _$TasksStore on _TasksStore, Store {
   }
 
   @override
+  void setFilterTags(List<TagModel> tags) {
+    final _$actionInfo = _$_TasksStoreActionController.startAction(
+        name: '_TasksStore.setFilterTags');
+    try {
+      return super.setFilterTags(tags);
+    } finally {
+      _$_TasksStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void toggleSortAscending() {
+    final _$actionInfo = _$_TasksStoreActionController.startAction(
+        name: '_TasksStore.toggleSortAscending');
+    try {
+      return super.toggleSortAscending();
+    } finally {
+      _$_TasksStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 tasks: ${tasks},
 editMode: ${editMode},
 taskSelectedForEdit: ${taskSelectedForEdit},
+filterTags: ${filterTags},
+sortAscending: ${sortAscending},
+filteredTasks: ${filteredTasks},
 dueDateFormatted: ${dueDateFormatted},
 tasksSortedByDueDate: ${tasksSortedByDueDate},
 tasksGroupedByDueDate: ${tasksGroupedByDueDate}

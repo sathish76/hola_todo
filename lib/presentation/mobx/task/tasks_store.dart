@@ -23,39 +23,66 @@ abstract class _TasksStore with Store {
   @observable
   ObservableList<TaskModel> tasks = ObservableList<TaskModel>();
 
-  StreamSubscription<List<TaskModel>>? subscription;
-
   @observable
   TaskEditMode editMode = TaskEditMode.add;
 
   @observable
   TaskModel? taskSelectedForEdit;
 
-  @computed
-  String? get dueDateFormatted => taskSelectedForEdit?.dueDate != null ? formatDate(taskSelectedForEdit!.dueDate) : null;
+  @observable
+  List<TagModel> filterTags = ObservableList<TagModel>();
+
+  @observable
+  bool sortAscending = true;
 
   @computed
-  List<TaskModel> get tasksSortedByDueDate => tasks.sorted((a, b) => a.dueDate.compareTo(b.dueDate)).toList();
+  List<TaskModel> get filteredTasks {
+    if (filterTags.isEmpty) {
+      return tasks;
+    } else {
+      return tasks.where((task) {
+        return task.tags?.any((tag) => filterTags.contains(tag)) ?? false;
+      }).toList();
+    }
+  }
 
   @computed
-  Map<DateTime, List<TaskModel>> get tasksGroupedByDueDate => tasksSortedByDueDate.groupListsBy((task) => task.dueDate);
+  String? get dueDateFormatted =>
+      taskSelectedForEdit?.dueDate != null
+          ? formatDate(taskSelectedForEdit!.dueDate)
+          : null;
+
+  @computed
+  List<TaskModel> get tasksSortedByDueDate => sortAscending
+      ? filteredTasks.sorted((a, b) => a.dueDate.compareTo(b.dueDate)).toList()
+      : filteredTasks
+          .sorted((a, b) => b.dueDate.compareTo(a.dueDate))
+          .toList();
+
+  @computed
+  Map<DateTime, List<TaskModel>> get tasksGroupedByDueDate =>
+      tasksSortedByDueDate.groupListsBy((task) => task.dueDate);
 
   @action
   Future<void> fetchTasks() async {
-    subscription = _taskRepository.getTasks().listen((taskList) {
+    _taskRepository.getTasks().listen((taskList) {
       tasks = ObservableList.of(taskList);
     });
   }
 
   @action
-  Future<void> addTask(String name, String description,) async {
-    await _taskRepository.addTask(taskSelectedForEdit!.copyWith(name: name, description: description));
+  Future<void> addTask(String name, String description) async {
+    await _taskRepository.addTask(
+      taskSelectedForEdit!.copyWith(name: name, description: description),
+    );
     prepareNewTask();
   }
 
   @action
   Future<void> updateTask(String name, String description) async {
-    await _taskRepository.updateTask(taskSelectedForEdit!.copyWith(name: name, description: description));
+    await _taskRepository.updateTask(
+      taskSelectedForEdit!.copyWith(name: name, description: description),
+    );
   }
 
   @action
@@ -107,7 +134,19 @@ abstract class _TasksStore with Store {
   @action
   void removeTagSelection(TagModel tag) {
     taskSelectedForEdit = taskSelectedForEdit!.copyWith(
-    tags: taskSelectedForEdit!.tags?.where((t) => t.id != tag.id).toList() ?? [],
-  );
+      tags:
+          taskSelectedForEdit!.tags?.where((t) => t.id != tag.id).toList() ??
+          [],
+    );
+  }
+
+  @action
+  void setFilterTags(List<TagModel> tags) {
+    filterTags = tags;
+  }
+
+  @action
+  void toggleSortAscending() {
+    sortAscending = !sortAscending;
   }
 }

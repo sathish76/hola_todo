@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hola_todo/core/di/di.dart';
+import 'package:hola_todo/core/utils/theme.dart';
 import 'package:hola_todo/presentation/mobx/tag/tag_store.dart';
 import 'package:hola_todo/presentation/mobx/task/tasks_store.dart';
 import 'package:hola_todo/presentation/router.dart';
@@ -20,8 +21,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Hola Todo',
         theme: ThemeData(
+          scaffoldBackgroundColor: backgroundColor,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          textTheme: GoogleFonts.ubuntuTextTheme(baseTheme.textTheme),
+          textTheme:
+              GoogleFonts.ubuntuTextTheme(baseTheme.textTheme).copyWith(),
+          appBarTheme: AppBarTheme(backgroundColor: backgroundColor),
         ),
         routerConfig: router,
       ),

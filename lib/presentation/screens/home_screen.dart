@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hola_todo/core/utils/theme.dart';
 import 'package:hola_todo/core/utils/utils.dart';
 import 'package:hola_todo/data/models/task/task_model.dart';
 import 'package:hola_todo/presentation/mobx/tag/tag_store.dart';
 import 'package:hola_todo/presentation/mobx/task/tasks_store.dart';
 import 'package:hola_todo/presentation/router.dart';
 import 'package:provider/provider.dart';
-import 'package:relative_time/relative_time.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,23 +72,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           task.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: textColor,
                           ),
                         ),
+                        const SizedBox(height: 8),
                         task.description != null
                             ? Text(
                               task.description!,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color:
+                                    task.isCompleted
+                                        ? textColor.withOpacity(0.5)
+                                        : textColor,
+                              ),
                             )
                             : const SizedBox.shrink(),
                         task.tags != null
@@ -133,7 +143,15 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(formatDateRelative(date)),
+        const SizedBox(height: 16),
+        Text(
+          formatDateRelative(date),
+          style: TextStyle(
+            color: textColor,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Flexible(
           fit: FlexFit.loose,
           child: ListView.builder(
@@ -152,28 +170,126 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent.shade100,
       appBar: AppBar(
-        title: const Text('Hola Todo'),
-        backgroundColor: Colors.blueAccent.shade100,
+        title: const Text(
+          'Hola Todo',
+          style: TextStyle(color: Color(0xFF37474F)),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            SizedBox(
+              height: 40,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Observer(
+                      builder: (context) {
+                        final selectedTags = tasksStore.filterTags;
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: tagStore.tags.length,
+                          itemBuilder: (context, index) {
+                            final tag = tagStore.tags[index];
+                            final isSelected = selectedTags.contains(tag);
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                              ),
+                              child: FilterChip(
+                                label: Text(tag.name),
+                                deleteIcon: null,
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    tasksStore.setFilterTags([
+                                      ...selectedTags,
+                                      tag,
+                                    ]);
+                                  } else {
+                                    tasksStore.setFilterTags(
+                                      selectedTags
+                                          .where((t) => t.id != tag.id)
+                                          .toList(),
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {
+                      tasksStore.toggleSortAscending();
+                    },
+                    icon: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.date_range,
+                            size: 24,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Icon(
+                          Icons.import_export,
+                          size: 12,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Expanded(
               child: Observer(
-                builder:
-                    (_) => ListView.builder(
-                      itemCount: tasksStore.tasksGroupedByDueDate.length,
-                      itemBuilder:
-                          (context, index) => _buildTaskGroup(
-                            tasksStore.tasksGroupedByDueDate.keys
-                                .toList()[index],
-                            tasksStore.tasksGroupedByDueDate.values
-                                .toList()[index],
-                          ),
-                    ),
+                builder: (context) {
+                  if (tasksStore.filterTags.isNotEmpty &&
+                      tasksStore.filteredTasks.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No tasks found with the selected tags',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }
+                  if (tasksStore.filteredTasks.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Start adding tasks',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: tasksStore.tasksGroupedByDueDate.length,
+                    itemBuilder:
+                        (context, index) => _buildTaskGroup(
+                          tasksStore.tasksGroupedByDueDate.keys.toList()[index],
+                          tasksStore.tasksGroupedByDueDate.values
+                              .toList()[index],
+                        ),
+                  );
+                },
               ),
             ),
           ],
@@ -181,6 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         key: fabKey,
+        backgroundColor: Colors.orangeAccent.shade100,
         onPressed: () {
           final renderBox =
               fabKey.currentContext!.findRenderObject() as RenderBox;
